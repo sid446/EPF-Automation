@@ -1,6 +1,5 @@
 // @ts-ignore
 import { NextRequest, NextResponse } from 'next/server';
-const pdfParse = require('pdf-parse');
 import * as XLSX from 'xlsx';
 
 export async function POST(request: NextRequest) {
@@ -14,6 +13,9 @@ export async function POST(request: NextRequest) {
 
     // Read PDF buffer
     const buffer = Buffer.from(await file.arrayBuffer());
+
+    // Dynamically require pdf-parse to avoid build-time evaluation
+    const pdfParse = require('pdf-parse');
 
     // Extract text from PDF
     const data = await pdfParse(buffer);
