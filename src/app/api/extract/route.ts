@@ -1,6 +1,8 @@
 // @ts-ignore
 import { NextRequest, NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
+// @ts-ignore
+import * as pdfjsLib from 'pdfjs-dist';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,13 +16,16 @@ export async function POST(request: NextRequest) {
     // Read PDF buffer
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Dynamically import pdf-parse to avoid build-time evaluation
-    // @ts-ignore
-    const { default: pdfParse } = await import('pdf-parse');
+    // Load PDF document
+    const loadingTask = pdfjsLib.getDocument({ data: buffer });
+    const pdf = await loadingTask.promise;
 
-    // Extract text from PDF
-    const data = await pdfParse(buffer);
-    const fullText = data.text;
+    // Get first page
+    const page = await pdf.getPage(1);
+
+    // Extract text content
+    const textContent = await page.getTextContent();
+    const fullText = textContent.items.map((item: any) => item.str).join(' ');
 
     console.log('Full text:', fullText);
 
