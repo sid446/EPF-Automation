@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     // Dynamically import pdf-parse to avoid build-time evaluation
+    // @ts-ignore
     const { default: pdfParse } = await import('pdf-parse');
 
     // Extract text from PDF
